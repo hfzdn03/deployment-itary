@@ -1,0 +1,36 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Class List</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Class Name</th>
+                <th>Number of Teachers</th>
+                <th>Number of Students</th>
+                <% if(user.role !== 'parent'){ %>
+                <th>Students Present</th>
+                <% } %>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% classList.forEach(function(classItem) { %>
+                <tr>
+                    <td><%= classItem.classname %></td>
+                    <td><%= classItem.teachersincharge.length %></td>
+                    <td><%= classItem.studentCount %></td>
+                    <% if(user.role !== 'parent'){ %>
+                    <td><%= classItem.studentsPresent %> / <%= classItem.studentCount %></td>
+                    <% } %>
+                    <td>
+                        <a href="/classdetails/<%= classItem.classId %>" class="btn btn-primary">View Details</a>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/footer', { async: true }) %>

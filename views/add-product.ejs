@@ -1,0 +1,42 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="container mt-4">
+    <h2>Tambah Produk</h2>
+    <form action="/add-product" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nama Produk</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Keterangan</label>
+            <textarea class="form-control" id="description" name="description"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="price" class="form-label">Harga (RM)</label>
+            <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+        </div>
+        <div class="mb-3">
+            <label for="type" class="form-label">Jenis Produk</label required>
+            <select class="form-select" id="type" name="type">
+                <option value="" selected>----Select Type----</option>
+                <option value="yuran">Yuran Pendaftaran</option>
+                <option value="pakaian">Pakaian Seragam</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="color" class="form-label">Warna</label>
+            <input type="text" class="form-control" id="color" name="color" placeholder="e.g., hijau, kuning">
+        </div>
+        <div class="mb-3">
+            <label for="size" class="form-label">Saiz</label>
+            <input type="text" class="form-control" id="size" name="size" placeholder="S, M, L, XL">
+        </div>
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Stok Tersedia</label>
+            <input type="number" class="form-control" id="quantity" name="quantity">
+        </div>
+        <button type="submit" class="btn btn-primary">Tambah Produk</button>
+    </form>
+</div>
+
+<%- include('partials/footer.ejs', { async: true }) %>

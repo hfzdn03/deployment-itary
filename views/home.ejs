@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - i-Tary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Ensure the footer is at the bottom */
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">i-Tary</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"></li>
+                        <a class="nav-link" href="/rekod-kehadiran">Student Attendance</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register-student">Register Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register-teacher">Register Teacher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/table">View Table</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <header class="bg-primary text-white text-center py-5">
+            <div class="container">
+                <h1 class="display-4">Welcome to i-Tary</h1>
+                <p class="lead">Managing student and teacher information efficiently</p>
+            </div>
+        </header>
+
+        <section class="py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h2>Our Mission</h2>
+                        <p>At Itary, we aim to simplify the process of managing student and teacher information. Our platform allows you to register students and teachers, view detailed information, and manage your educational institution with ease.</p>
+                        <a href="/register-student" class="btn btn-primary">Register Student</a>
+                        <a href="/register-teacher" class="btn btn-secondary">Register Teacher</a>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="https://via.placeholder.com/600x400" class="img-fluid rounded shadow" alt="Sample Image">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3 mt-auto">
+        <p>&copy; 2024 Itary. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

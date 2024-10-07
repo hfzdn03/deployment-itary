@@ -1,0 +1,329 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="col-md-9">
+    <h2 class="mt-4">Halaman Pembayaran</h2>
+
+    <!-- Payment Tables -->
+    <div class="mt-4">
+        <!-- Bayaran Yuran Pendaftaran -->
+        <h3>Bayaran Yuran Pendaftaran</h3>
+        <table class="table table-bordered" id="table1">
+            <thead>
+                <tr>
+                    <th>Bil</th>
+                    <th>Jenis Yuran</th>
+                    <th>Pilihan</th>
+                    <th>Jumlah</th>
+                    <% if (isAdmin) { %>
+                    <th>Admin</th>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody>
+                <% let yuranCount = 1; %>
+                <% products.forEach(function(product) { %>
+                    <% if (product.type === 'yuran') { %>
+                        <tr data-product-id="<%= product._id %>">
+                            <td><%= yuranCount++ %></td>
+                            <td>
+                                <strong><%= product.name %></strong><br>
+                                <small><%= product.desc %></small>
+                            </td>
+                            <td><input type="checkbox" class="fee-option" data-price="<%= product.price %>" /></td>
+                            <td>RM <%= product.price.toFixed(2) %></td>
+                            <% if (isAdmin) { %>
+                                <td>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal<%= product._id %>">Edit</button>
+                                    <form action="/remove-product/<%= product._id %>" method="POST" style="display:inline;" onsubmit="return confirmDelete();">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
+                                </td>
+                            <% } %>
+                        </tr>
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal<%= product._id %>" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel">Edit Produk</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/edit-product/<%= product._id %>" method="post">
+                                            <div class="mb-3">
+                                                <label for="name" class="form-label">Nama Produk</label>
+                                                <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="description" class="form-label">Keterangan</label>
+                                                <textarea class="form-control" id="description" name="description"><%= product.desc %></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="price" class="form-label">Harga (RM)</label>
+                                                <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" step="0.01" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }); %>                
+            </tbody>                        
+            <tfoot>
+                <tr>
+                    <td colspan="3">Jumlah Keseluruhan</td>
+                    <td id="total-fees">RM 0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Produk (Pakaian Seragam) Table -->
+        <h3>Produk (Pakaian Seragam)</h3>
+        <table class="table table-bordered" id="table2">
+            <thead>
+                <tr>
+                    <th>Bil</th>
+                    <th>Pakaian</th>
+                    <th>Saiz</th>
+                    <th>Pilihan</th>
+                    <th>Kuantiti</th>
+                    <th>Jumlah</th>
+                    <th>Stok</th> <!-- New stock column -->
+                    <% if (isAdmin) { %>
+                    <th>Admin</th>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody>
+                <% let pakaianCount = 1; %>
+                <% products.forEach(function(product) { %>
+                    <% if (product.type === 'pakaian') { %>
+                        <% 
+                        const sizes = Array.isArray(product.sizes) ? product.sizes : [product.size]; 
+                        let stockStatus, rowClass = '';
+                        if (product.quantity === 0) {
+                            stockStatus = 'Out of stock';
+                            rowClass = 'table-secondary'; // Grey out the row
+                        } else if (product.quantity > 50) {
+                            stockStatus = 'Available';
+                        } else if (product.quantity < 30) {
+                            stockStatus = 'Low in stock';
+                        } else {
+                            stockStatus = 'In Stock';
+                        }
+                        %>
+                        <% sizes.forEach(function(size, sizeIndex) { %>
+                            <tr data-product-id="<%= product._id %>" class="<%= rowClass %>">
+                                <% if (sizeIndex === 0) { %>
+                                    <td rowspan="<%= sizes.length %>"><%= pakaianCount++ %></td>
+                                    <td rowspan="<%= sizes.length %>">
+                                        <strong><%= product.name %> <%= product.color %></strong><br>
+                                        <small><%= product.desc %></small>
+                                    </td>
+                                <% } %>
+                                <td><%= size %></td>
+                                <td>
+                                    <input type="checkbox" class="clothing-option" data-price="<%= product.price %>" data-index="<%= product._id %>" <% if (product.quantity === 0) { %>disabled<% } %> />
+                                </td>
+                                <td><input type="number" class="quantity" name="quantity-<%= product._id %>-<%= sizeIndex %>" class="form-control" min="0" placeholder="Quantity" <% if (product.quantity === 0) { %>disabled<% } %>></td>
+                                <td>RM <%= product.price.toFixed(2) %></td>
+                                <td><%= stockStatus %></td> <!-- Display stock status -->
+                                <% if (isAdmin && sizeIndex === 0) { %>
+                                    <td rowspan="<%= sizes.length %>">
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal<%= product._id %>">Edit</button>
+                                        <form action="/remove-product/<%= product._id %>" method="POST" style="display:inline;">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                        </form>
+                                    </td>
+                                <% } %>
+                            </tr>
+                        <% }); %>
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal<%= product._id %>" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel">Edit Produk</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/edit-product/<%= product._id %>" method="post">
+                                            <div class="mb-3">
+                                                <label for="name" class="form-label">Nama Produk</label>
+                                                <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="description" class="form-label">Keterangan</label>
+                                                <textarea class="form-control" id="description" name="description"><%= product.desc %></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="price" class="form-label">Harga (RM)</label>
+                                                <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" step="0.01" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="sie" class="form-label">Saiz</label>
+                                                <input type="text" class="form-control" id="size" name="size" value="<%= product.size %>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="sie" class="form-label">Warna</label>
+                                                <input type="text" class="form-control" id="color" name="color" value="<%= product.color %>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="quantity" class="form-label">Stok Tersedia</label>
+                                                <input type="number" class="form-control" id="quantity" name="quantity" value="<%= product.quantity %>">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }); %>                
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5">Jumlah Keseluruhan</td>
+                    <td id="total-clothing">RM 0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Add Product Button (visible only to admin or teacher) -->
+        <% if (isAdmin) { %>
+            <div class="mt-4">
+                <a href="/add-product" class="btn btn-primary">Tambah Produk</a>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Proceed to Checkout Button -->
+    <% if (isParent) { %>
+    <div class="mt-4">
+        <button id="proceed-checkout-btn" class="btn btn-primary">Proceed to Checkout</button>
+    </div>
+    <% } %>
+
+    <!-- Child Selection Modal -->
+    <div class="modal fade" id="child-select-modal" tabindex="-1" aria-labelledby="childSelectLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="childSelectLabel">Select a Child</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-select" id="childSelect">
+                        <% children.forEach(function(child) { %>
+                            <option value="<%= child._id %>"><%= child.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="confirm-child-btn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>
+
+<script>
+    // Function to calculate total fees for Table 1
+    function calculateTotalFees() {
+        let total = 0;
+        document.querySelectorAll('#table1 .fee-option:checked').forEach(checkbox => {
+            total += parseFloat(checkbox.dataset.price);
+        });
+        document.getElementById('total-fees').innerText = 'RM ' + total.toFixed(2);
+    }
+
+    // Function to calculate total cost for clothing in Table 2
+    function calculateTotalClothing() {
+        let total = 0;
+        document.querySelectorAll('#table2 .clothing-option:checked').forEach(checkbox => {
+            const quantityInput = checkbox.closest('tr').querySelector('.quantity');
+            const quantity = parseInt(quantityInput.value) || 0;
+            const price = parseFloat(checkbox.dataset.price);
+            total += price * quantity;
+        });
+        document.getElementById('total-clothing').innerText = 'RM ' + total.toFixed(2);
+    }
+
+    // Event listeners for Table 1
+    document.querySelectorAll('#table1 .fee-option').forEach(checkbox => {
+        checkbox.addEventListener('change', calculateTotalFees);
+    });
+
+    // Event listeners for Table 2
+    document.querySelectorAll('#table2 .clothing-option').forEach(checkbox => {
+        checkbox.addEventListener('change', calculateTotalClothing); // Add listener for checkbox
+    });
+    document.querySelectorAll('#table2 .quantity').forEach(input => {
+        input.addEventListener('input', calculateTotalClothing); // Already there
+    });
+
+    // Function to gather selected products and quantities for checkout
+    function gatherSelectedProducts() {
+        const selectedProducts = [];
+
+        // Collect selected fee products (table 1)
+        document.querySelectorAll('#table1 .fee-option:checked').forEach(checkbox => {
+            const productRow = checkbox.closest('tr');
+            const productId = productRow.dataset.productId;
+            const price = parseFloat(checkbox.dataset.price);
+            const productName = productRow.querySelector('td strong').innerText;
+            const productDescription = productRow.querySelector('td small').innerText;
+
+            selectedProducts.push({ productId, price, quantity: 1, name: productName, description: productDescription });
+        });
+
+        // Collect selected clothing products (table 2)
+        document.querySelectorAll('#table2 tbody tr').forEach(row => {
+            const checkbox = row.querySelector('.clothing-option:checked');
+            if (checkbox) {
+                const productId = row.dataset.productId;
+                const price = parseFloat(checkbox.dataset.price);
+                const quantityInput = row.querySelector('.quantity');
+                const quantity = parseInt(quantityInput.value) || 0;
+
+                // Only add if quantity is greater than 0
+                if (quantity > 0) {
+                    const productName = row.querySelector('td strong').innerText;
+                    selectedProducts.push({ productId, price, quantity, name: productName });
+                }
+            }
+        });
+
+        return selectedProducts;
+    }
+
+    document.getElementById('proceed-checkout-btn').addEventListener('click', function() {
+        const selectedProducts = gatherSelectedProducts();
+
+        if (selectedProducts.length === 0) {
+            alert("Please select at least one product to proceed.");
+            return;
+        }
+
+        // Show child selection modal
+        const modal = new bootstrap.Modal(document.getElementById('child-select-modal'));
+        modal.show();
+    });
+
+    document.getElementById('confirm-child-btn').addEventListener('click', function() {
+        const selectedChildId = document.getElementById('childSelect').value;
+        const selectedProducts = gatherSelectedProducts();
+
+        // Redirect to the checkout page with selected products and child id
+        const checkoutUrl = `/checkout-summary?childId=${selectedChildId}&products=${encodeURIComponent(JSON.stringify(selectedProducts))}`;
+        
+        console.log(checkoutUrl); // Log the URL to check if product IDs are included
+        window.location.href = checkoutUrl;
+    });
+
+</script>

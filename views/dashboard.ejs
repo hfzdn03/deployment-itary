@@ -1,0 +1,304 @@
+<%- include('partials/header', { async: true }) %>
+<style>
+    .carousel-item {
+        position: relative;
+    }
+    
+    .delete-btn {
+        position: absolute;
+        bottom: 60px; /* Adjust this value to move it higher or lower */
+        right: 10px; /* Adjust if necessary */
+        z-index: 10; /* Ensure it's above other elements */
+    }
+    
+    .carousel-section {
+        display: <% if (carouselImages.length > 0) { %>block<% } else { %>none<% } %>;
+    }
+    
+    .carousel-caption h5,
+    .carousel-caption p {
+        color: #000; /* Change this to your preferred color */
+    }
+    .chart-area {
+    width: 100%; /* Ensure full width */
+    height: 100%; /* Adjust height as needed */
+}
+
+</style>
+    
+
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.js"></script>
+
+<!-- FullCalendar.js -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    </div>
+
+    <% if (user.role === 'parent') { %>
+        <!-- Parent Dashboard View -->
+        <h2>Selamat Pagi</h2>
+        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-keyboard="true" data-bs-pause="hover">
+            <div class="carousel-inner">
+                <% carouselImages.forEach((image, index) => { %>
+                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                        <img src="<%= image.imageUrl %>" class="d-block w-100" style="height: 300px; object-fit: contain;" alt="Carousel Image <%= index + 1 %>">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5><%= image.caption %></h5>
+                            <p><%= image.description %></p>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>                
+
+        <!-- Update the Invoice Section -->
+        <h3 class="mt-4">Order Summary</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Pelajar</th>
+                    <th>Nama Produk</th> <!-- Ensure this header is correct -->
+                    <th>Tarikh</th>
+                    <th>Jumlah</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% invoices.forEach((order, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= order.studentName %></td>
+                        <td><%= order.productName %></td> <!-- Correct reference for product name -->
+                        <td><%= new Date(order.date).toLocaleDateString() %></td>
+                        <td>RM<%= order.amount %></td>
+                        <td><% if (order.status === 'Pay Now') { %>
+                            <a href="/pay-now/<%= order._id %>" class="btn btn-primary">Pay Now</a>
+                        <% } else { %>
+                            <p class="<%= order.statusClass %>"><%= order.status %></p> <!-- Display 'Pending', 'Paid', or 'Expired' -->
+                        <% } %>
+                        </td>
+                    </tr>
+                <% }); %>                
+            </tbody>            
+        </table>
+
+    <% } else { %>
+
+    <!-- Admin/Teacher Dashboard View -->
+    <div class="row">
+        <!-- Jumlah Pelajar -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Jumlah Pelajar</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= studentCount %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah Guru -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Jumlah Guru</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%= teacherCount %></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maklumat Kewangan -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Pendapatan Bulanan -(<%= currentMonthName %>)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                RM<%= totalPaidAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                              </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Kehadiran Pelajar Chart -->
+        <div class="col-xl-6 col-lg-7 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Peratus Kehadiran Pelajar</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rumusan Kehadiran Pelajar Table -->
+        <div class="col-xl-6 col-lg-5 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Rumusan Kehadiran Pelajar</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kelas</th>
+                                <th>Umur</th>
+                                <th>Peratus Kedatangan</th>
+                                <th>Jumlah Pelajar</th> <!-- New Column -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% let index = 1; %>
+                            <% attendanceSummary.forEach(summary => { %>
+                                <tr>
+                                    <td><%= index++ %></td> <!-- Row Number -->
+                                    <td><%= summary.classType %></td> <!-- Kelas -->
+                                    <td><%= summary.age %></td> <!-- Umur -->
+                                    <td><%= Number(summary.attendancePercentage).toFixed(2) %> %</td> <!-- Peratus Kedatangan -->
+                                    <td><%= summary.totalStudents %></td> <!-- Total Students -->
+                                </tr>
+                            <% }); %>
+                        </tbody>                        
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Event Calendar -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Event Calendar</h6>
+                </div>
+                <div class="card-body">
+                    <div id="eventCalendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Chart Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const attendanceSummary = <%- JSON.stringify(attendanceSummary) %>; // Ensure this is correctly structured
+            const classNames = attendanceSummary.map(s => s.age + " " + s.classType );
+            const attendancePercentages = attendanceSummary.map(s => Number(s.attendancePercentage).toFixed(2));
+    
+            console.log('Class Names:', classNames);
+            console.log('Attendance Percentages:', attendancePercentages);
+    
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            const attendanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: classNames,
+                    datasets: [{
+                        label: 'Peratus Kehadiran (%)',
+                        data: attendancePercentages,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: 'black'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            titleColor: 'white',
+                            bodyColor: 'white'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Kelas',
+                                color: 'black'
+                            },
+                            ticks: {
+                                color: 'black'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Peratus Kehadiran (%)',
+                                color: 'black'
+                            },
+                            ticks: {
+                                color: 'black'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>        
+
+    <!-- FullCalendar Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('eventCalendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: <%- JSON.stringify(events) %>
+            });
+            calendar.render();
+        });
+    </script>
+    <% } %>
+
+</div>
+
+<%- include('partials/footer') %>

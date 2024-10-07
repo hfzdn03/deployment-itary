@@ -1,0 +1,92 @@
+<%- include('partials/header', { user: user }) %>
+
+<div class="container">
+    <h2>Parent Information</h2>
+
+    <!-- Class filter dropdown -->
+    <form method="get" action="/table-parent">
+        <div class="form-group">
+            <label for="classFilter">Filter by Class:</label>
+            <select id="classFilter" name="selectedClass" class="form-control" onchange="this.form.submit()">
+                <option value="">Select Class</option>
+                <% classes.forEach(classObj => { %>
+                    <option value="<%= classObj._id %>" <%= selectedClass === classObj._id.toString() ? 'selected' : '' %> >
+                        <%= classObj.classname %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+        <!-- You may add other filters here if needed -->
+    </form>
+
+    <!-- Parent Information Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nama Bapa</th>
+                <th>Pekerjaan Bapa</th>
+                <th>Nama Ibu</th>
+                <th>Pekerjaan Ibu</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (parents.length > 0) { %>
+                <% parents.forEach(parent => { %>
+                    <tr>
+                        <td><%= parent.user_id.nama_bapa %></td>
+                        <td><%= parent.pekerjaan_bapa %></td>
+                        <td><%= parent.nama_ibu %></td>
+                        <td><%= parent.pekerjaan_ibu %></td>
+                        <td>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#parentModal<%= parent._id %>">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Modal for detailed parent info -->
+                    <div class="modal fade" id="parentModal<%= parent._id %>" tabindex="-1" role="dialog" aria-labelledby="parentModalLabel<%= parent._id %>" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="parentModalLabel<%= parent._id %>">Parent Details: <%= parent.nama_bapa %> & <%= parent.nama_ibu %></h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>IC No Bapa:</strong> <%= parent.ic_no_bapa %></p>
+                                    <p><strong>IC No Ibu:</strong> <%= parent.ic_no_ibu %></p>
+                                    <p><strong>Warganegara Bapa:</strong> <%= parent.warganegara_bapa %></p>
+                                    <p><strong>Warganegara Ibu:</strong> <%= parent.warganegara_ibu %></p>
+                                    <p><strong>Phone Bapa:</strong> <%= parent.phone_bapa %></p>
+                                    <p><strong>Phone Ibu:</strong> <%= parent.phone_ibu %></p>
+                                    <p><strong>Email:</strong> <%= parent.email %></p>
+                                    <p><strong>Address:</strong> <%= parent.address %></p>
+                                    <p><strong>Username:</strong> <%= parent.username %></p>
+                                    <hr>
+                                    <h5>Children</h5>
+                                    <ul>
+                                        <% parent.children.forEach(child => { %>
+                                            <li><a href="/student-details/<%= child.childId %>"><%= child.name %></a> (Class: <%= child.className %>)</li>
+                                        <% }) %>
+                                    </ul>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <tr>
+                    <td colspan="5" class="text-center">No parents found.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/footer.ejs', { async: true }) %>

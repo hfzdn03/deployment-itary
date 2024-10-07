@@ -1,0 +1,225 @@
+<%- include('partials/header', { async: true }) %>
+
+<style>
+.carousel-item {
+    position: relative;
+}
+
+.delete-btn {
+    position: absolute;
+    bottom: 60px; /* Adjust this value to move it higher or lower */
+    right: 10px; /* Adjust if necessary */
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+.carousel-section {
+    display: <% if (carouselImages.length > 0) { %>block<% } else { %>none<% } %>;
+}
+
+.carousel-caption h5,
+.carousel-caption p {
+    color: #000; /* Change this to your preferred color */
+}
+</style>
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Dashboard Settings</h1>
+
+    <!-- Tabs for Navigation -->
+    <ul class="nav nav-tabs" id="settingsTabs">
+        <% if (user.role == 'admin' || user.role == 'teacher') { %>
+        <li class="nav-item">
+            <a class="nav-link active" href="#carousel" data-toggle="tab">Carousel Settings</a>
+        </li>
+        <% } %>
+        <li class="nav-item">
+            <a class="nav-link" href="#account" data-toggle="tab">Account Settings</a>
+        </li>
+        <% if (user.role == 'admin' || user.role == 'teacher') { %>
+        <li class="nav-item">
+            <a class="nav-link" href="#headerColor" data-toggle="tab">Sidebar Color</a>
+        </li>
+        <% } %>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Carousel Content Section -->
+        <div class="tab-pane fade show active" id="carousel">
+            <h2 class="h4 mb-3">Carousel Settings</h2>
+            
+            <div id="miniCarousel" class="carousel slide mb-4 carousel-section" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <% if (carouselImages.length > 0) { %>
+                        <% carouselImages.forEach((image, index) => { %>
+                            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                <img src="<%= image.imageUrl %>" class="d-block w-100" style="height: 300px; object-fit: contain;" alt="Carousel Image <%= index + 1 %>">
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5><%= image.caption %></h5>
+                                    <p><%= image.description %></p>
+                                </div>
+                                <form action="/delete-carousel/<%= image._id %>" method="POST" style="display: inline;">
+                                    <input type="hidden" name="id" value="<%= image._id %>">
+                                    <button type="submit" class="btn btn-danger delete-btn">Delete</button>
+                                </form>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="carousel-item active">
+                            <img src="path/to/default/image.jpg" class="d-block w-100" alt="No Images">
+                        </div>
+                    <% } %>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#miniCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#miniCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+            <!-- Form to Update Carousel Image Data -->
+            <h4>Update Current Image</h4>
+            <form id="carouselForm">
+                <div class="form-group">
+                    <label for="caption">Caption</label>
+                    <input type="text" class="form-control" id="caption" name="caption" placeholder="Enter caption">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" placeholder="Enter description"></textarea>
+                </div>
+                <input type="hidden" id="currentImageIndex" value="0">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <br><br>
+            </form>
+
+            <!-- Form to Upload New Carousel Image -->
+            <h4>Add New Image</h4>
+            <form id="addImageForm" action="/upload-carousel" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="newCarouselImage">Upload Image</label>
+                    <input type="file" class="form-control" id="newCarouselImage" name="carouselImage" required>
+                </div>
+                <div class="form-group">
+                    <label for="newCaption">Caption</label>
+                    <input type="text" class="form-control" id="newCaption" name="caption" placeholder="Enter caption">
+                </div>
+                <div class="form-group">
+                    <label for="newDescription">Description</label>
+                    <textarea class="form-control" id="newDescription" name="description" placeholder="Enter description"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Image</button>
+            </form>
+
+            <% if (carouselImages.length === 0) { %>
+                <p>No images available. Please add a new image.</p>
+            <% } %>
+        </div>        
+        
+        <!-- Account Settings Section -->
+        <div class="tab-pane fade" id="account">
+            <h2 class="h4 mb-3">Account Settings</h2>
+            <form id="accountSettingsForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Account</button>
+            </form>
+        </div>
+
+        <!-- Header Color Section -->
+        <div class="tab-pane fade" id="headerColor">
+            <h2 class="h4 mb-3">Sidebar Color</h2>
+            <form id="headerColorForm" action="/update-header-color" method="POST">
+                <div class="form-group">
+                  <label for="headerColor">Select Sidebar Color</label>
+                  <input type="color" class="form-control" id="headerColor" name="headerColor" value="<%= settings ? settings.headerColor : '#ffffff' %>">
+                </div>
+                <button type="submit" class="btn btn-primary">Change Sidebar Color</button>
+            </form>              
+        </div>        
+    </div>
+</div>
+
+<%- include('partials/footer.ejs', { async: true }) %>
+
+<script>
+    const carouselItems = document.querySelectorAll('.carousel-item');
+    const captionInput = document.getElementById('caption');
+    const descriptionInput = document.getElementById('description');
+    const currentImageIndex = document.getElementById('currentImageIndex');
+
+    function updateInputs(index) {
+        const currentItem = carouselItems[index];
+        const caption = currentItem.querySelector('.carousel-caption h5').innerText;
+        const description = currentItem.querySelector('.carousel-caption p').innerText;
+
+        captionInput.value = caption;
+        descriptionInput.value = description;
+    }
+
+    document.querySelector('.carousel-control-next').addEventListener('click', function() {
+        const index = (parseInt(currentImageIndex.value) + 1) % carouselItems.length;
+        currentImageIndex.value = index;
+        updateInputs(index);
+    });
+
+    document.querySelector('.carousel-control-prev').addEventListener('click', function() {
+        const index = (parseInt(currentImageIndex.value) - 1 + carouselItems.length) % carouselItems.length;
+        currentImageIndex.value = index;
+        updateInputs(index);
+    });
+
+    // Initialize inputs with the first image's data
+    updateInputs(0);
+
+    // Handle form submission to update carousel image data
+    document.getElementById('carouselForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        formData.append('index', currentImageIndex.value); // Append current image index
+
+        fetch('/update-carousel', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload(); // Reload to see changes
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // Handle form submission to upload new carousel image
+    document.getElementById('addImageForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const formData = new FormData(this); // Create a FormData object from the form
+
+        fetch('/upload-carousel', {
+            method: 'POST',
+            body: formData // Send the FormData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.message === 'Carousel image uploaded successfully.') {
+                location.reload(); // Reload the page to see the new image
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>

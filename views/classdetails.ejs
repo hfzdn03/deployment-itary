@@ -1,0 +1,60 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="container py-5">
+    <!-- Back Button to Return to Class List -->
+    <a href="/classlist" class="btn btn-secondary mb-3">Back to Class List</a>
+    
+    <h2 class="text-center mb-4">Class Details: <%= classDetails.classname %></h2>
+
+    <!-- Teachers In Charge Table -->
+    <h3>Teachers In Charge</h3>
+    <table class="table table-bordered mb-5">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% teachers.forEach(function(teacher) { %>
+                <tr>
+                    <td>
+                        <%= teacher.lastname ? teacher.firstname + ' ' + teacher.lastname : teacher.firstname %>
+                    </td>
+                    <td><%= teacher.phone %></td>
+                    <td><%= teacher.email %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <!-- Students Table -->
+    <h3>Students</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <% if(user.role !== 'parent'){ %>
+                <th>Attendance</th> <!-- New column for attendance -->
+                <% } %>
+            </tr>
+        </thead>
+        <tbody>
+            <% students.forEach(function(student) { %>
+                <tr>
+                    <td><%= student.name %></td>
+                    <td><%= new Date(student.dob).toDateString() %></td>
+                    <td><%= student.gender %></td>
+                    <% if(user.role !== 'parent'){ %>
+                    <td><%= student.attendanceStatus %></td> <!-- Display attendance status -->
+                    <% } %>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/footer', { async: true }) %>

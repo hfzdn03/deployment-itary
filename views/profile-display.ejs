@@ -1,0 +1,170 @@
+<%- include('partials/header', { user: user }) %>
+
+<!-- Main Content -->
+<div class="container py-5">
+    <h2 class="text-center mb-4">Profile</h2>
+    <form id="editProfileForm" action="/profile/edit" method="POST">
+        <input type="hidden" name="role" value="<%= userRole %>">
+
+        <% if (userRole === 'admin') { %>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <input type="text" class="form-control" id="role" name="role" value="<%= user.role %>" readonly>
+            </div>
+
+        <% } else if (userRole === 'teacher') { %>
+            <div class="mb-3">
+                <label for="fullname" class="form-label">Username</label>
+                <input type="text" class="form-control" id="fullname" name="username" value="<%= user.username %>">
+            </div>
+            <div class="mb-3">
+                <label for="fullname" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="firstname" name="firstname" value="<%= user.firstname %>">
+            </div>
+            <div class="mb-3">
+                <label for="fullname" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="lastname" name="lastname" value="<%= user.lastname %>">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>">
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" id="phone" name="phone" value="<%= user.phone %>">
+            </div>
+            <div class="mb-3">
+                <label for="subject" class="form-label">Subject</label>
+                <input type="text" class="form-control" id="subject" name="subject" value="<%= user.subject %>">
+            </div>
+            <div class="mb-3">
+                <label for="class_id" class="form-label">Class In Charge</label>
+                <% if (user.classInCharge && user.classInCharge.length > 0) { %>
+                    <select class="form-control" id="class_id" name="class_id">
+                        <% user.classInCharge.forEach(function(cls) { %>
+                            <option value="<%= cls._id %>" <%= cls._id.equals(user.class_id) ? 'selected' : '' %>><%= cls.className %></option>
+                        <% }); %>
+                    </select>
+                <% } else { %>
+                    <input type="text" class="form-control" value="No Class Assigned" readonly>
+                <% } %>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <input type="text" class="form-control" id="role" name="role" value="<%= user.role %>" readonly>
+            </div>
+
+        <% } else if (userRole === 'parent') { %>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>">
+            </div>
+            <div class="mb-3">
+                <label for="fatherName" class="form-label">Father's Name</label>
+                <input type="text" class="form-control" id="fatherName" name="fatherName" value="<%= user.nama_bapa %>">
+            </div>
+            <div class="mb-3">
+                <label for="fatherIC" class="form-label">Father's IC Number</label>
+                <input type="text" class="form-control" id="fatherIC" name="fatherIC" value="<%= user.ic_no_bapa %>">
+            </div>
+            <div class="mb-3">
+                <label for="fatherCitizenship" class="form-label">Father's Citizenship</label>
+                <input type="text" class="form-control" id="fatherCitizenship" name="fatherCitizenship" value="<%= user.warganegara_bapa %>">
+            </div>
+            <div class="mb-3">
+                <label for="fatherOccupation" class="form-label">Father's Occupation</label>
+                <input type="text" class="form-control" id="fatherOccupation" name="fatherOccupation" value="<%= user.pekerjaan_bapa %>">
+            </div>
+            <div class="mb-3">
+                <label for="fatherPhone" class="form-label">Father's Phone</label>
+                <input type="text" class="form-control" id="fatherPhone" name="fatherPhone" value="<%= user.phone_bapa %>">
+            </div>
+            <div class="mb-3">
+                <label for="motherName" class="form-label">Mother's Name</label>
+                <input type="text" class="form-control" id="motherName" name="motherName" value="<%= user.nama_ibu %>">
+            </div>
+            <div class="mb-3">
+                <label for="motherIC" class="form-label">Mother's IC Number</label>
+                <input type="text" class="form-control" id="motherIC" name="motherIC" value="<%= user.ic_no_ibu %>">
+            </div>
+            <div class="mb-3">
+                <label for="motherCitizenship" class="form-label">Mother's Citizenship</label>
+                <input type="text" class="form-control" id="motherCitizenship" name="motherCitizenship" value="<%= user.warganegara_ibu %>">
+            </div>
+            <div class="mb-3">
+                <label for="motherOccupation" class="form-label">Mother's Occupation</label>
+                <input type="text" class="form-control" id="motherOccupation" name="motherOccupation" value="<%= user.pekerjaan_ibu %>">
+            </div>
+            <div class="mb-3">
+                <label for="motherPhone" class="form-label">Mother's Phone</label>
+                <input type="text" class="form-control" id="motherPhone" name="motherPhone" value="<%= user.phone_ibu %>">
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <input type="text" class="form-control" id="role" name="role" value="<%= user.role %>" readonly>
+            </div>
+
+        <% } %>
+
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" id="editProfileBtn">Edit</button>
+            <button type="submit" class="btn btn-primary" id="saveProfileBtn" style="display:none;">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('editProfileBtn').addEventListener('click', function() {
+        const form = document.getElementById('editProfileForm');
+        const role = form.querySelector('input[name="role"]').value;
+        let newAction = '/profile/edit';
+
+        if (role === 'admin') {
+            newAction = '/edit-profile/admin';
+        } else if (role === 'teacher') {
+            newAction = '/edit-profile/teacher';
+        } else if (role === 'parent') {
+            newAction = '/edit-profile/parent';
+        }
+
+        form.setAttribute('action', newAction);
+
+        Array.from(form.elements).forEach(element => {
+            if (element.type !== 'hidden' && element.id !== 'role') {
+                element.removeAttribute('readonly');
+                element.style.backgroundColor = '#fff';
+            }
+        });
+
+        document.getElementById('editProfileBtn').style.display = 'none';
+        document.getElementById('saveProfileBtn').style.display = 'block';
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const inputs = document.querySelectorAll('#editProfileForm input, #editProfileForm select');
+
+    editProfileBtn.addEventListener('click', function() {
+        // Toggle edit mode
+        inputs.forEach(input => input.removeAttribute('readonly'));
+        document.querySelectorAll('#editProfileForm input, #editProfileForm select').forEach(input => input.removeAttribute('readonly'));
+        saveProfileBtn.style.display = 'block';
+        editProfileBtn.style.display = 'none';
+    });
+});
+
+</script>
+
+<%- include('partials/footer.ejs', { async: true }) %>

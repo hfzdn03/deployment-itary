@@ -1,0 +1,64 @@
+<%- include('partials/header', { async: true }) %>
+                    <!-- Maklumat Pelajar -->
+                    <div class="col-md-12">
+                        <div class="card p-4">
+                            <h5 class="card-title">Maklumat Pelajar</h5>
+                            <form action="/register-student" method="POST">
+                                <div class="mb-3">
+                                    <label for="childName" class="form-label">Nama</label>
+                                    <input type="text" class="form-control" id="childName" name="childName" placeholder="Enter child's name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ic_no" class="form-label">No. K/P Baru</label>
+                                    <input type="text" class="form-control" id="ic_no" name="ic_no" placeholder="Enter IC number" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">Jantina</label>
+                                    <select class="form-control" id="gender" name="gender" required>
+                                        <option value="">Pilih Jantina</option>
+                                        <option value="Lelaki">Lelaki</option>
+                                        <option value="Perempuan">Perempuan</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="childdob" class="form-label">Tarikh Lahir</label>
+                                    <input type="date" class="form-control" id="childdob" name="childdob" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                                    <input type="text" class="form-control" id="tempat_lahir" name="tempat_lahir" placeholder="Enter birthplace" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="keturunan" class="form-label">Keturunan</label>
+                                    <input type="text" class="form-control" id="keturunan" name="keturunan" placeholder="Enter ethnicity" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="warganegara" class="form-label">Warganegara</label>
+                                    <input type="text" class="form-control" id="warganegara" name="warganegara" placeholder="Enter nationality" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="pribumi_sarawak" class="form-label">Pribumi Sarawak</label>
+                                    <select class="form-control" id="pribumi_sarawak" name="pribumi_sarawak" required>
+                                        <option value="">Pilih</option>
+                                        <option value="Ya">Ya</option>
+                                        <option value="Tidak">Tidak</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="childclass" class="form-label">Kelas</label>
+                                    <select class="form-control" id="class_id" name="class_id" >
+                                        <option value="">Pilih kelas</option>
+                                        <% registeredClasses.forEach(cls => { %>
+                                            <option value="<%= cls._id.toString() %>"><%= cls.classname %> - <%= cls.batchyear %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                                
+                                <div class="d-grid mb-2">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+<%- include('partials/footer.ejs', { async: true }) %>

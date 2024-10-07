@@ -1,0 +1,60 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="container py-5">
+    
+    <h2 class="text-center mb-4">Monthly Bil Record</h2>
+
+    <form action="/monthly-bil-record" method="GET">
+        <div class="form-group">
+            <label for="classSelect">Select Class:</label>
+            <select id="classSelect" name="classId" class="form-control" <% if(user.role === 'teacher') { %> disabled <% } %>>
+                <% classes.forEach(function(classItem) { %>
+                    <option value="<%= classItem._id %>" <%= classItem._id == selectedClassId ? 'selected' : '' %>><%= classItem.classname %></option>
+                <% }) %>
+            </select>            
+        </div>
+
+        <div class="form-group">
+            <label for="yearSelect">Select Year:</label>
+            <select id="yearSelect" name="year" class="form-control">
+                <% for (let year = new Date().getFullYear(); year >= 2000; year--) { %>
+                    <option value="<%= year %>" <%= year == selectedYear ? 'selected' : '' %>><%= year %></option>
+                <% } %>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Filter</button>
+    </form>
+
+    <table class="table table-bordered" id="studentTable">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <% for (let month of ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']) { %>
+                    <th><%= month %></th>
+                <% } %>
+            </tr>
+        </thead>
+        <tbody>
+            <% students.forEach(function(student) { %>
+                <tr data-class-id="<%= student.class_id %>" class="studentRow">
+                    <td><%= student.name %></td>
+                    <% for (let month of ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']) { %>
+                        <td>
+                            <input type="checkbox" name="payments[<%= student._id %>][<%= month %>]" value="true" 
+                            <% if (month === 'Jan' || month === 'Nov' || month === 'Dec') { %>
+                                <%= student.payments[month] ? 'checked' : '' %> 
+                            <% } %>
+                            disabled>
+                        </td>                           
+                    <% } %>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <input type="hidden" name="classId" value="<%= selectedClassId %>">
+    <input type="hidden" name="year" value="<%= selectedYear %>">
+</div>
+
+<%- include('partials/footer', { async: true }) %>

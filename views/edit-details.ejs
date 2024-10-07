@@ -1,0 +1,156 @@
+<%- include('partials/header', { async: true }) %>
+<div class="col-md-9">
+    <h2 class="mt-4">Edit Butiran Pelajar</h2>
+
+    <!-- Horizontal Navigation Bar (Tabs) -->
+    <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="personal-tab" data-bs-toggle="tab" href="#personal" role="tab" aria-controls="personal" aria-selected="true">Butiran Peribadi</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="academic-tab" data-bs-toggle="tab" href="#academic" role="tab" aria-controls="academic" aria-selected="false">Butiran Akademik</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="siblings-tab" data-bs-toggle="tab" href="#siblings" role="tab" aria-controls="siblings" aria-selected="false">Butiran Adik-Beradik</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="others-tab" data-bs-toggle="tab" href="#others" role="tab" aria-controls="others" aria-selected="false">Butiran Lain-lain</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <!-- Butiran Peribadi Tab -->
+        <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+            <form action="/edit-student/<%= student._id %>" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <!-- Maklumat Pelajar -->
+                    <div class="col-md-6">
+                        <div class="card p-4">
+                            <% if (student.propict) { %>
+                                <img src="<%= student.propict %>" class="rounded-circle mx-auto d-block" alt="Gambar Profil" style="width:150px; height:150px;">
+                            <% } else { %>
+                                <img src="https://via.placeholder.com/150" class="rounded-circle mx-auto d-block" alt="Gambar Profil">
+                            <% } %>
+                            <h5 class="card-title mt-3 text-center">Gambar Profil</h5>
+                            <input type="file" class="form-control" id="propict" name="propict" accept="image/*">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <label for="name" class="form-label">Nama</label>
+                                    <input type="text" class="form-control" id="name" name="name" value="<%= student.name %>" required>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="ic_no" class="form-label">No. K/P Baru</label>
+                                    <input type="text" class="form-control" id="ic_no" name="ic_no" value="<%= student.ic_no %>" required>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="gender" class="form-label">Jantina</label>
+                                    <select class="form-select" id="gender" name="gender" required>
+                                        <option value="Lelaki" <%= student.gender === 'Lelaki' ? 'selected' : '' %>>Lelaki</option>
+                                        <option value="Perempuan" <%= student.gender === 'Perempuan' ? 'selected' : '' %>>Perempuan</option>
+                                    </select>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="dob" class="form-label">Tarikh Lahir</label>
+                                    <input type="date" class="form-control" id="dob" name="dob" value="<%= new Date(student.dob).toISOString().split('T')[0] %>" required>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                                    <input type="text" class="form-control" id="tempat_lahir" name="tempat_lahir" value="<%= student.tempat_lahir %>" required>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="keturunan" class="form-label">Keturunan</label>
+                                    <input type="text" class="form-control" id="keturunan" name="keturunan" value="<%= student.keturunan %>" required>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="warganegara" class="form-label">Warganegara</label>
+                                    <input type="text" class="form-control" id="warganegara" name="warganegara" value="<%= student.warganegara %>" required>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="pribumi_sarawak" class="form-label">Pribumi Sarawak</label>
+                                    <select class="form-select" id="pribumi_sarawak" name="pribumi_sarawak" required>
+                                        <option value="Ya" <%= student.pribumi_sarawak === 'Ya' ? 'selected' : '' %>>Ya</option>
+                                        <option value="Tidak" <%= student.pribumi_sarawak === 'Tidak' ? 'selected' : '' %>>Tidak</option>
+                                    </select>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Maklumat Ibu Bapa -->
+                    <div class="col-md-6">
+                        <div class="card p-4">
+                            <h5 class="card-title">Maklumat Ibu Bapa</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <label for="nama_bapa" class="form-label">Nama Bapa</label>
+                                    <input type="text" class="form-control" id="nama_bapa" name="nama_bapa" value="<%= student.parent_id.user_id.nama_bapa %>" required>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="ic_no_bapa" class="form-label">No. K/P Baru Bapa</label>
+                                    <input type="text" class="form-control" id="ic_no_bapa" name="ic_no_bapa" value="<%= student.parent_id.user_id.ic_no_bapa %>" >
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="pekerjaan_bapa" class="form-label">Pekerjaan Bapa</label>
+                                    <input type="text" class="form-control" id="pekerjaan_bapa" name="pekerjaan_bapa" value="<%= student.parent_id.user_id.pekerjaan_bapa %>" >
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="phone" class="form-label">No. Telefon Bapa</label>
+                                    <input type="text" class="form-control" id="phone_bapa" name="phone_bapa" value="<%= student.parent_id.user_id.phone_bapa %>" >
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="warganegara_bapa" class="form-label">Warganegara Bapa</label>
+                                    <input type="text" class="form-control" id="warganegara_bapa" name="warganegara_bapa" value="<%= student.parent_id.user_id.warganegara_bapa %>" >
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="nama_ibu" class="form-label">Nama Ibu</label>
+                                    <input type="text" class="form-control" id="nama_ibu" name="nama_ibu" value="<%= student.parent_id.user_id.nama_ibu %>" required>
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="ic_no_ibu" class="form-label">No. K/P Baru Ibu</label>
+                                    <input type="text" class="form-control" id="ic_no_ibu" name="ic_no_ibu" value="<%= student.parent_id.user_id.ic_no_ibu %>" >
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="pekerjaan_ibu" class="form-label">Pekerjaan Ibu</label>
+                                    <input type="text" class="form-control" id="pekerjaan_ibu" name="pekerjaan_ibu" value="<%= student.parent_id.user_id.pekerjaan_ibu %>" >
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="phone" class="form-label">No. Telefon Ibu</label>
+                                    <input type="text" class="form-control" id="phone_ibu" name="phone_ibu" value="<%= student.parent_id.user_id.phone_ibu %>" >
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="warganegara_ibu" class="form-label">Warganegara Ibu</label>
+                                    <input type="text" class="form-control" id="warganegara_ibu" name="warganegara_ibu" value="<%= student.parent_id.user_id.warganegara_ibu %>" >
+                                </li>
+                                <li class="list-group-item">
+                                    <label for="address" class="form-label">Alamat</label>
+                                    <input type="text" class="form-control" id="address" name="address" value="<%= student.parent_id.user_id.address %>" >
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="/student-details/<%= student._id %>" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Butiran Akademik Tab (Placeholder) -->
+        <div class="tab-pane fade" id="academic" role="tabpanel" aria-labelledby="academic-tab">
+            <p>Content for Butiran Akademik goes here.</p>
+        </div>
+
+        <!-- Butiran Adik-Beradik Tab (Placeholder) -->
+        <div class="tab-pane fade" id="siblings" role="tabpanel" aria-labelledby="siblings-tab">
+            <p>Content for Butiran Adik-Beradik goes here.</p>
+        </div>
+
+        <!-- Butiran Lain-lain Tab (Placeholder) -->
+        <div class="tab-pane fade" id="others" role="tabpanel" aria-labelledby="others-tab">
+            <p>Content for Butiran Lain-lain goes here.</p>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer.ejs', { async: true }) %>

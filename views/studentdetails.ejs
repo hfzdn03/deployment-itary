@@ -1,0 +1,141 @@
+<%- include('partials/header', { async: true }) %>
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <h2 class="mt-4">Butiran <%= student.name %></h2>
+                
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="personal-details-tab" data-bs-toggle="tab" href="#personal-details" role="tab" aria-controls="personal-details" aria-selected="true">Butiran Peribadi</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="academic-details-tab" data-bs-toggle="tab" href="#academic-details" role="tab" aria-controls="academic-details" aria-selected="false">Butiran Akademik</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="siblings-details-tab" data-bs-toggle="tab" href="#siblings-details" role="tab" aria-controls="siblings-details" aria-selected="false">Butiran Adik-Beradik</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="other-details-tab" data-bs-toggle="tab" href="#other-details" role="tab" aria-controls="other-details" aria-selected="false">Butiran Lain-lain</a>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content mt-4" id="myTabContent">
+                    <!-- Butiran Peribadi -->
+                    <div class="tab-pane fade show active" id="personal-details" role="tabpanel" aria-labelledby="personal-details-tab">
+                        <div class="row">
+                            <!-- Maklumat Pelajar -->
+                            <div class="col-md-6">
+                                <div class="card p-4">
+                                    <% if (student.propict) { %>
+                                        <img src="<%= student.propict %>" class="rounded-circle mx-auto d-block" alt="Gambar Profil" style="width:150px; height:150px;">
+                                    <% } else { %>
+                                        <img src="https://via.placeholder.com/150" class="rounded-circle mx-auto d-block" alt="Gambar Profil">
+                                    <% } %>
+                                    <h5 class="card-title mt-3 text-center">Gambar Profil</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Nama: <%= student.name %></li>
+                                        <li class="list-group-item">No. K/P Baru: <%= student.ic_no %></li>
+                                        <li class="list-group-item">Jantina: <%= student.gender %></li>
+                                        <li class="list-group-item">Tarikh Lahir: <%= student.dob.toLocaleDateString() %></li>
+                                        <li class="list-group-item">Tempat Lahir: <%= student.tempat_lahir %></li>
+                                        <li class="list-group-item">Keturunan: <%= student.keturunan %></li>
+                                        <li class="list-group-item">Warganegara: <%= student.warganegara %></li>
+                                        <li class="list-group-item">Pribumi Sarawak: <%= student.pribumi_sarawak %></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Maklumat Ibu Bapa -->
+                            <div class="col-md-6">
+                                <div class="card p-4">
+                                    <h5 class="card-title">Maklumat Ibu Bapa</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Nama Bapa: <%= student.parent_info.nama_bapa %></li>
+                                        <li class="list-group-item">No. K/P Baru Bapa: <%= student.parent_info.ic_no_bapa %></li>
+                                        <li class="list-group-item">Pekerjaan Bapa: <%= student.parent_info.pekerjaan_bapa %></li>
+                                        <li class="list-group-item">No. Telefon Bapa: <%= student.parent_info.phone_bapa %></li>
+                                        <li class="list-group-item">Warganegara Bapa: <%= student.parent_info.warganegara_bapa %></li>
+                                        <li class="list-group-item">Nama Ibu: <%= student.parent_info.nama_ibu %></li>
+                                        <li class="list-group-item">No. K/P Baru Ibu: <%= student.parent_info.ic_no_ibu %></li>
+                                        <li class="list-group-item">Pekerjaan Ibu: <%= student.parent_info.pekerjaan_ibu %></li>
+                                        <li class="list-group-item">No. Telefon Ibu: <%= student.parent_info.phone_ibu %></li>
+                                        <li class="list-group-item">Warganegara Ibu: <%= student.parent_info.warganegara_ibu %></li>
+                                        <li class="list-group-item">Alamat: <%= student.parent_info.address %></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Butiran Akademik -->
+                    <div class="tab-pane fade" id="academic-details" role="tabpanel" aria-labelledby="academic-details-tab">
+                        <div class="col-md-6">
+                            <div class="card p-4">
+                                <h5 class="card-title">Maklumat Akademik</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Kelas: <%= student.class_info.classname %></li>
+                                    <li class="list-group-item">Guru Kelas: 
+                                        <% if (student.teacher_info && student.teacher_info.length > 0) { %>
+                                            <% student.teacher_info.forEach(function(teacher, index) { %>
+                                                <% if (index > 0) { %>, <% } %>
+                                                <% if(teacher.lastname){ %>
+                                                    <%= teacher.firstname %> <%= teacher.lastname %>
+                                                <% } else if(!teacher.lastname) { %>
+                                                    <%= teacher.firstname %>  
+                                                <% } %> <!-- Display full name -->
+                                            <% }); %>
+                                        <% } else { %>
+                                            Tiada Guru
+                                        <% } %>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Butiran Adik-Beradik -->
+                    <div class="tab-pane fade" id="siblings-details" role="tabpanel" aria-labelledby="siblings-details-tab">
+                        <h5 class="card-title">Maklumat Adik-Beradik</h5>
+                        <div id="siblings-list">
+                            <% student.siblings.forEach(function(sibling, index) { %>
+                                <div class="sibling-entry mb-3">
+                                    <h6>Adik-Beradik <%= index + 1 %></h6>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Nama: <%= sibling.nama %></li>
+                                        <li class="list-group-item">Umur: <%= new Date().getFullYear() - new Date(sibling.dob).getFullYear() %> tahun</li>
+                                        <li class="list-group-item">Status: <%= sibling.status %></li>
+                                        <li class="list-group-item">Tahap Pendidikan: <%= sibling.tahap_pendidikan %></li>
+                                    </ul>
+                                    <div class="mt-2">
+                                        <button class="btn btn-warning btn-sm" onclick="editSibling(<%= index %>)">Edit</button>
+                                        <button class="btn btn-danger btn-sm" onclick="removeSibling(<%= index %>)">Remove</button>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+
+                        <!-- Add Sibling Button -->
+                        <div class="mt-4">
+                            <button class="btn btn-primary btn-sm" onclick="addSibling()">Tambah Adik-Beradik</button>
+                        </div>
+                    </div>
+
+                    <!-- Butiran Lain-lain -->
+                    <div class="tab-pane fade" id="other-details" role="tabpanel" aria-labelledby="other-details-tab">
+                        <h5 class="card-title">Butiran Lain-lain</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Hobi: Membaca, Melukis</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Edit and Delete Buttons -->
+                <div class="mt-3 text-end">
+                    <a class="btn btn-warning btn-sm d-inline-block" href="/edit-student/<%= student._id %>" style="margin-right: 10px;">Edit</a>
+                    <form class="d-inline-block" action="/delete-student/<%= student._id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this student?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+            </div>
+<%- include('partials/footer.ejs', { async: true }) %>

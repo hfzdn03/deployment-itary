@@ -1,0 +1,37 @@
+<%- include('partials/header', { async: true }) %>
+            <div class="card-body d-flex flex-column justify-content-center">
+                <h4 class="text-center mb-4">Pendaftaran Ibu-bapa</h4>
+                <div class="col-md-6">
+                <form action="/register-parent" method="POST">
+                    <div class="mb-3">
+                        <label for="fathername" class="form-label">Nama Bapa</label>
+                        <input type="text" class="form-control" id="fathername" name="fathername" placeholder="Enter father's name" >
+                    </div>
+                    <div class="mb-3">
+                        <label for="mothername" class="form-label">Nama Ibu</label>
+                        <input type="text" class="form-control" id="mothername" name="mothername" placeholder="Enter mother's name" >
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailparent" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="emailparent" name="emailparent" placeholder="Enter email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="usernameparent" class="form-label">Username/Login name</label>
+                        <input type="text" class="form-control" id="usernameparent" name="usernameparent" placeholder="Enter username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentpass" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="parentpass" name="parentpass" placeholder="Enter password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPass" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPass" name="confirmPass" placeholder="Re-enter password" required>
+                    </div>
+                    
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+<%- include('partials/footer.ejs', { async: true }) %>

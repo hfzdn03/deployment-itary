@@ -1,0 +1,69 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="col-md-9">
+    <h2 class="mt-4">Checkout Summary</h2>
+
+    <div class="mt-4">
+        <h3>Selected Child: <%= child.name %></h3>
+    </div>
+
+    <!-- Products Table -->
+    <h3>Products Selected</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Bil</th>
+                <th>Product Name</th>
+                <th>Price (RM)</th>
+                <th>Quantity</th>
+                <th>Total (RM)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% let count = 1; %>
+            <% products.forEach(function(product) { %>
+                <tr>
+                    <input type="hidden" name="product_id" value="<%= product.productId %>">
+                    <td><%= count++ %></td>
+                    <td><%= product.name || product.productName %></td>
+                    <td>RM <%= product.price.toFixed(2) %></td>
+                    <td><%= product.quantity %></td>
+                    <td>RM <%= (product.price * product.quantity).toFixed(2) %></td>
+                </tr>
+
+                <!-- Add hidden inputs for product details -->
+                
+            <% }); %>            
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">Total Amount</td>
+                <td>RM <%= totalAmount.toFixed(2) %></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="mt-4">
+        <h4>Invoice Number: </h4>
+        <a href="/" class="btn btn-primary">Return to Dashboard</a>
+        <form action="/place-order" method="POST" style="display:inline;">
+            <input type="hidden" name="childId" value="<%= child._id %>">
+            <input type="hidden" name="totalAmount" value="<%= totalAmount %>">
+        
+            <!-- Add hidden inputs for each product ID and quantity -->
+            <% products.forEach(function(product) { %>
+                <input type="hidden" name="product_ids[]" value="<%= product.productId %>">
+                <input type="hidden" name="quantities[]" value="<%= product.quantity %>">
+                <input type="hidden" name="product_names[]" value="<%= product.name || product.productName %>">
+                <input type="hidden" name="product_prices[]" value="<%= product.price %>">
+                <input type="hidden" name="product_descriptions[]" value="<%= product.description || '' %>">
+                <input type="hidden" name="product_colors[]" value="<%= product.color || '' %>">
+                <input type="hidden" name="product_sizes[]" value="<%= product.size || '' %>">
+            <% }); %>
+        
+            <button type="submit" class="btn btn-success">Submit Order</button>
+        </form>        
+    </div>    
+</div>
+
+<%- include('partials/footer', { async: true }) %>

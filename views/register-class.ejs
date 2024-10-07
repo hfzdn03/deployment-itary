@@ -1,0 +1,120 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="col-md-12">
+
+    <!-- Display Error Message -->
+    <% if (errorMessage) { %>
+        <div class="alert alert-danger">
+            <%= errorMessage %>
+        </div>
+    <% } %>
+
+    <!-- Display Success Message -->
+    <% if (successMessage) { %>
+        <div class="alert alert-success">
+            <%= successMessage %>
+        </div>
+    <% } %>
+
+    <!-- Teacher/Admin View: Register/Update Class -->
+    <% if (userRole === 'teacher' || userRole === 'admin') { %>
+    <div class="card p-4">
+        <h5 class="card-title"><%= userRole === 'teacher' ? 'Register/Update Your Class' : 'Assign Teacher to Class' %></h5>
+        <form action="<%= userRole === 'admin' ? '/admin-assign-class' : '/register-class' %>" method="POST">
+            <!-- Teacher Selection -->
+            <% if (userRole === 'admin') { %>
+            <div class="mb-3">
+                <label for="teacherSelect" class="form-label">Select Teacher</label>
+                <select class="form-control" id="teacherSelect" name="teacherId" required>
+                    <option value="">Select Teacher</option>
+                    <% allTeachers.forEach(teacher => { %>
+                        <% if(teacher.lastname){ %>
+                            <option value="<%= teacher._id %>"><%= teacher.firstname + ' ' + teacher.lastname %></option>
+                        <% } else { %>
+                            <option value="<%= teacher._id %>"><%= teacher.firstname %></option>
+                        <% } %>
+                    <% }); %>
+                </select>                
+            </div>
+            <% } else { %>
+            <!-- For teachers, the teacher selection is locked and read-only -->
+            <input type="hidden" name="teacherId" value="<%= user._id %>">
+            <div class="mb-3">
+                <label for="teacherName" class="form-label">Teacher Name</label>
+                <% if(user.lastname){ %>
+                    <input type="text" class="form-control" id="teacherName" value="<%= user.firstname + ' ' + user.lastname %>" readonly>
+                <% } else { %>
+                    <input type="text" class="form-control" id="teacherName" value="<%= user.firstname %>" readonly>
+                <% } %>   
+            </div>
+            <% } %>
+
+            <!-- Class Selection -->
+            <div class="mb-3">
+                <label for="classname" class="form-label">Class Name</label>
+                <select class="form-control" id="classname" name="classname" required>
+                    <option value="">Select Class</option>
+                    <% allClasses.forEach(classItem => { %>
+                        <% const classAssigned = availableClasses.find(cls => cls.classname === classItem); %>
+                        <% const teacherInClass = classAssigned && classAssigned.teachersincharge.some(teacher => teacher.equals(user._id)); %>
+                        <% if (teacherInClass) { %>
+                            <!-- Pre-select the class if the logged-in teacher is assigned -->
+                            <option value="<%= classItem %>" selected><%= classItem %></option>
+                        <% } else if (!classAssigned || classAssigned.teachersincharge.length < 2) { %>
+                            <option value="<%= classItem %>"><%= classItem %></option>
+                        <% } %>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="d-grid mb-2">
+                <button type="submit" class="btn btn-primary">
+                    <%= userRole === 'admin' ? 'Assign Class' : 'Register/Update Class' %>
+                </button>
+            </div>
+        </form>
+    </div>
+    <% } %>
+
+    <!-- Parent View: Assign Child to Class -->
+    <% if (userRole === 'parent') { %>
+        <div class="card p-4">
+            <h5 class="card-title">Register Your Child to a Class</h5>
+            <form action="/parent-assign-class" method="POST">
+                <!-- Child Selection -->
+                <div class="mb-3">
+                    <label for="childSelect" class="form-label">Select Your Child</label>
+                    <select class="form-control" id="childSelect" name="child_id" required>
+                        <% children.forEach(child => { %>
+                            <% const classAssigned = child.class_id ? `(${child.class_id.classname})` : ''; %>
+                            <option value="<%= child._id %>">
+                                <%= child.class_id ? `${child.name} ${classAssigned}` : child.name %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+    
+                <!-- Class Selection -->
+                <div class="mb-3">
+                    <label for="classSelect" class="form-label">Available Classes</label>
+                    <select class="form-control" id="classSelect" name="class_id" required>
+                        <option value="">Select Class</option>
+                        <% availableClasses.forEach(classItem => { %>
+                            <% const isFull = classItem.studentCount >= 25; %>
+                            <option value="<%= classItem._id %>" <%= isFull ? 'disabled' : '' %>>
+                                <%= classItem.classname %> <%= isFull ? '(Full)' : '' %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+    
+                <div class="d-grid mb-2">
+                    <button type="submit" class="btn btn-primary">Assign Class</button>
+                </div>
+            </form>
+        </div>
+    <% } %>
+    
+</div>
+
+<%- include('partials/footer.ejs', { async: true }) %>

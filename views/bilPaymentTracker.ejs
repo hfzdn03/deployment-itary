@@ -1,0 +1,125 @@
+<%- include('partials/header', { async: true }) %>
+<!-- Main Content -->
+<div class="container py-5">
+    <h2 class="text-center mb-4">Bil Payment Tracker</h2>
+
+    <!-- Filter Form -->
+    <form method="get" action="/bil-payment-tracker">
+        <div class="row mb-4">
+            <% if (user.role === 'teacher' || user.role === 'admin') { %>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="classSelect">Class</label>
+                        <select id="classSelect" name="kelas" class="form-select" <% if (user.role === 'teacher') { %> disabled <% } %>>
+                            <% if (user.role === 'teacher' && teacherClass) { %>
+                                <option value="<%= teacherClass.class_id._id %>" selected><%= teacherClass.class_id.classname %></option>
+                            <% } else { %>
+                                <option value="">All Classes</option>
+                                <% classes.forEach(function(classItem) { %>
+                                    <option value="<%= classItem._id %>" <% if (classItem._id == selectedClass) { %>selected<% } %>><%= classItem.classname %></option>
+                                <% }); %>                                
+                            <% } %>                            
+                        </select>                                                
+                    </div>
+                </div>
+            <% } %>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="monthSelect">Month</label>
+                    <select id="monthSelect" name="month" class="form-select">
+                        <% const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; %>
+                        <% months.forEach(function(month, index) { %>
+                            <option value="<%= index + 1 %>" <% if (index + 1 == selectedMonth) { %> selected <% } %>><%= month %></option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mb-4">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    <!-- Table with Payment Records -->
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Product Names</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                        <% if(user.role =='admin'){ %> 
+                        <th>Actions</th>
+                        <% } %> 
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let orderIndex = 1; %>
+                    <% students.forEach(function(student) { %>
+                        <% student.orders.forEach(function(order) { %>
+                            <tr>
+                                <td><%= orderIndex++ %></td> <!-- Unique index for each order -->
+                                <td><%= student.name %></td>
+                                <td>
+                                    <%= order.products.map(function(product) { return product.name; }).join(", ") %>
+                                </td>
+                                <td><%= new Date(order.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></td>
+                                <td><%= order.status %></td>
+                                <% if(user.role =='admin'){ %> 
+                                <td>
+                                    <a href="#viewReceiptModal<%= order._id %>" class="btn btn-secondary btn-sm" data-bs-toggle="modal">View</a>
+                                </td>
+                                <% } %> 
+                            </tr>
+
+                            <!-- View Receipt Modal -->
+                            <div class="modal fade" id="viewReceiptModal<%= order._id %>" tabindex="-1" aria-labelledby="viewReceiptModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="viewReceiptModalLabel">Receipt for Invoice <%= order.invoiceNumber %></h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <img src="<%= order.File %>" alt="Receipt Image" class="img-fluid">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <% if (user.role === 'teacher' || user.role === 'admin') { %>
+                                                <% if (order.status === 'Pending') { %>
+                                                    <form action="/approve-order/<%= order._id %>" method="POST">
+                                                        <button type="submit" class="btn btn-success">Approve</button>
+                                                    </form>
+                                                <% } else if (order.status === 'Paid') { %>
+                                                    <form action="/disapprove-order/<%= order._id %>" method="POST">
+                                                        <button type="submit" class="btn btn-warning">Disapprove</button>
+                                                    </form>
+                                                <% } %>
+                                            <% } %>
+                                            <% if (user.role === 'parent') { %>            
+                                                <% if (order.status !== 'Pending') { %>
+                                                    <form action="/withdraw-order/<%= order._id %>" method="POST" class="d-inline">
+                                                        <button type="submit" class="btn btn-warning">Withdraw</button>
+                                                    </form>
+                                                <% } %>
+                                                <form action="/delete-order/<%= order._id %>" method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% }); %>                                                                                
+                </tbody>                                                                                                                                                                      
+            </table>
+        </div>
+    </div>    
+</div>
+
+<%- include('partials/footer.ejs', { async: true }) %>

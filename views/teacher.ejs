@@ -1,0 +1,49 @@
+<%- include('partials/header', { async: true }) %>
+            <div class="card-body d-flex flex-column justify-content-center">
+                <h4 class="text-center mb-4">Teacher Registration</h4>
+                <form action="/register-teacher" method="POST">
+                    <!-- Other input fields like name, email, etc. -->
+                    <div class="mb-3">
+                        <label for="teacherfirstName" class="form-label">Nama</label>
+                        <input type="text" class="form-control" id="teacherfirstName" name="teacherfirstName" placeholder="Enter username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacherEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="teacherEmail" name="teacherEmail" placeholder="Enter teacher's email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacherName" class="form-label">Username/Login name</label>
+                        <input type="text" class="form-control" id="teacherName" name="teacherName" placeholder="Enter username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacherPass" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="teacherPass" name="teacherPass" placeholder="Enter password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPass" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPass" name="confirmPass" placeholder="Re-enter password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacherPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="teacherPhone" name="teacherPhone" placeholder="Enter teacher's phone number" >
+                    </div>
+                    <!-- Class Selection -->
+                    <div class="mb-3">
+                        <label for="teacherClass" class="form-label">Class</label>
+                        <select class="form-control" id="teacherClass" name="teacherClass" required>
+                            <option value="">Select a class</option>
+                            <% availableClasses.forEach(cls => { %>
+                                <option value="<%= cls._id %>"><%= cls.classname %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <div class="d-grid mb-2">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+                <div class="d-grid">
+                    <a href="/table-guru" class="btn btn-secondary">View Table</a>
+                </div>
+            </div>
+<%- include('partials/footer.ejs', { async: true }) %>

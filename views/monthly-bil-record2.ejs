@@ -1,0 +1,129 @@
+<%- include('partials/header', { async: true }) %>
+<!-- Main Content -->
+<div class="container py-5">
+    <h2 class="text-center mb-4">Monthly Bil Record</h2>
+
+    <!-- Filter Form -->
+    <form method="get" action="/monthly-bil-record">
+        <div class="row mb-4">
+            <% if (user.role === 'teacher' || user.role === 'admin') { %>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="classSelect">Class</label>
+                        <select id="classSelect" name="kelas" class="form-select" <% if (user.role === 'teacher') { %> disabled <% } %>>
+                            <% if (user.role === 'teacher') { %>
+                                <option value="<%= teacherClass._id %>" selected><%= teacherClass.classname %></option>
+                            <% } else { %>
+                                <option value="" selected>All Classes</option>
+                                <% classes.forEach(function(classItem) { %>
+                                    <option value="<%= classItem._id %>" <% if (classItem._id == selectedClass) { %>selected<% } %>><%= classItem.classname %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="d-flex justify-content-end mb-4">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    <!-- Table with Payment Records -->
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Pelajar</th>
+                        <% const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; %>
+                        <% months.forEach(function(month) { %>
+                            <th><%= month %></th>
+                        <% }); %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let studentIndex = 1; %>
+                    <% students.forEach(function(student) { %>
+                        <tr>
+                            <td><%= studentIndex++ %></td>
+                            <td><%= student.name %></td>
+
+                            <% months.forEach(function(month, index) { %>
+                                <td>
+                                    <% let ordersInMonth = student.orders.filter(order => new Date(order.date).getMonth() === index); %>
+                                    <% if (ordersInMonth.length > 0) { %>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#viewOrderModal<%= student._id %><%= index %>">
+                                            View Orders
+                                        </button>
+
+                                        <!-- Modal for Viewing Orders -->
+                                        <div class="modal fade" id="viewOrderModal<%= student._id %><%= index %>" tabindex="-1" aria-labelledby="orderModalLabel<%= student._id %><%= index %>" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="orderModalLabel<%= student._id %><%= index %>">Orders for <%= month %> - <%= student.name %></h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <% ordersInMonth.forEach(function(order) { %>
+                                                            <div class="mb-3">
+                                                                <!-- Order Date with Timestamp in Default Timezone -->
+                                                                <h6>Order Date: <%= new Date(order.date).toLocaleDateString() %></h6>
+                                                                <h6>Last Updated Time: <%= new Date(order.timestamp).toLocaleTimeString() %></h6>
+                                                                
+                                                                <p>Total Amount: RM <%= order.totalAmount %></p>
+                                                                <ul>
+                                                                    <% order.products.forEach(function(product) { %>
+                                                                        <li>
+                                                                            <strong><%= product.name %></strong>
+                                                                            <% if (product.type === 'pakaian') { %>
+                                                                                <ul>
+                                                                                    <li>Size: <%= product.size %></li>
+                                                                                    <li>Color: <%= product.color %></li>
+                                                                                    <li>Quantity: <%= product.quantity %></li>
+                                                                                </ul>
+                                                                            <% } %>
+                                                                            <p>Price: RM <%= product.price %></p>
+                                                                        </li>
+                                                                    <% }); %>
+                                                                </ul>
+                                            <s></s>                    <p>Order Status: 
+                                                                    <form action="/update-order-status/<%= order._id %>" method="POST">
+                                                                        <select name="status" class="form-select" <% if (user.role === 'teacher') { %> disabled <% } %>>
+                                                                            <option value="Pay Now" <%= order.status === 'Pay Now' ? 'selected' : '' %>>Pay Now</option>
+                                                                            <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                                                            <option value="Paid" <%= order.status === 'Paid' ? 'selected' : '' %>>Paid</option>
+                                                                            <option value="Invalid" <%= order.status === 'Invalid' ? 'selected' : '' %>>Invalid</option>
+                                                                        </select>
+                                                                        <% if(user.role=='admin'){ %>
+                                                                        <button type="submit" class="btn btn-success btn-sm mt-2">Update Status</button>
+                                                                        <% } %>
+                                                                    </form>
+                                                                </p>
+                                                                <p>
+                                                                    <a href="<%= order.File %>" target="_blank" class="btn btn-info btn-sm">View Receipt</a>
+                                                                </p>
+                                                            </div>
+                                                            <hr />
+                                                        <% }); %>                                                                                                                
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% } else { %>
+                                        <span>No Orders</span>
+                                    <% } %>
+                                </td>
+                            <% }); %>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer.ejs', { async: true }) %>

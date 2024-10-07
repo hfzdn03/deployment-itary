@@ -1,0 +1,101 @@
+<%- include('partials/header', { user: user }) %>
+
+<!-- Main Content -->
+<div class="container py-5">
+    <h2 class="text-center mb-4">Teacher Information</h2>
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Class In Charge</th>
+                        <th>Number of Students Registered</th>
+                        <th>Phone Number</th>
+                        <th>Action</th> <!-- New Action Column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <% teachers.forEach(function(teacher, index) { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><%= teacher.name %></td> <!-- Remove <a> tag for name -->
+                            <td>
+                                <% if (teacher.classInCharge) { %>
+                                    <%= teacher.classInCharge %>
+                                <% } else { %>
+                                    No Class Assigned
+                                <% } %>
+                            </td>
+                            <td><%= teacher.numOfStudents || 0 %></td>
+                            <td><%= teacher.phone %></td>
+                            <td>
+                                <!-- Action button for viewing details in modal -->
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teacherModal<%= teacher.teacher._id %>">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>                                        
+            </table>                                             
+        </div>
+    </div>
+</div>
+
+<!-- Modal for teacher details -->
+<% teachers.forEach(function(teacher) { %>
+    <div class="modal fade" id="teacherModal<%= teacher.teacher._id %>" tabindex="-1" aria-labelledby="teacherModalLabel<%= teacher.teacher._id %>" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="teacherModalLabel<%= teacher.teacher._id %>">Teacher Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Username: <%= teacher.teacher.username %></p>
+                    <p>Email: <%= teacher.teacher.email %></p>
+                    <p>Phone: <%= teacher.teacher.phone %></p>
+                    <% if (user.role === 'admin') { %> <!-- Reset password button for admin -->
+                        <p>
+                            <button type="button" class="btn btn-secondary" onclick="resetPassword('<%= teacher.teacher._id %>')">Reset Password</button>
+                        </p>
+                    <% } %>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<% }); %>
+
+<script>
+    function resetPassword(teacherId) {
+    // Send a request to the server to reset the password
+    fetch('/reset-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ teacherId: teacherId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Password reset successfully!');
+      } else {
+        alert('Error resetting password: ' + data.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error resetting password:', error);
+    });
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- End of Main Content -->
+
+<%- include('partials/footer.ejs', { async: true }) %>

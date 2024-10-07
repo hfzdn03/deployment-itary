@@ -1,0 +1,144 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="col-md-9">
+    <h2 class="mt-4">Payment Summary for Students</h2>
+
+    <!-- Year Selection Dropdown -->
+    <form id="yearFilterForm" method="GET" action="/payment-summary">
+        <label for="yearSelect">Select Year:</label>
+        <select name="year" id="yearSelect" class="form-select w-auto" onchange="document.getElementById('yearFilterForm').submit()">
+            <% const currentYear = new Date().getFullYear(); %>
+            <% for (let y = currentYear; y >= currentYear - 5; y--) { %> <!-- Show last 5 years -->
+                <option value="<%= y %>" <%= y === parseInt(selectedYear) ? 'selected' : '' %>><%= y %></option>
+            <% } %>
+        </select>
+    </form>
+
+    <div class="table-responsive mt-4" style="overflow-x: auto; border: 1px solid #ddd; padding: 15px;">
+        <table id="paymentSummaryTable" class="table table-bordered" style="min-width: 270vw; font-size: 14px;">
+            <thead class="table-dark sticky-top">
+                <tr>
+                    <th>Kelas</th>
+                    <% for (let month of ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember']) { %>
+                        <th colspan="3" style="text-align: center;"><%= month %></th>
+                    <% } %>
+                </tr>
+                <tr>
+                    <th></th>
+                    <% for (let month of ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember']) { %>
+                        <th>Bil Murid</th>
+                        <th>Anggaran (RM)</th>
+                        <th>Sebenar (RM)</th>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody>
+                <% classes.forEach(classItem => { %>
+                    <tr style="background-color: <%= classItem._id % 2 === 0 ? '#f9f9f9' : '#ffffff' %>;">
+                        <td><%= classItem.classname %></td>
+                        <% classItem.expectedPayments.forEach(payment => { %>
+                            <td><%= classItem.studentCount %></td>
+                            <td>RM <%= payment.expectedRM.toFixed(2) %></td>
+                            <td><p>RM <%= payment.actualRM.toFixed(2) %></p></td>
+                        <% }); %>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-between">
+        <!-- Download Table Button -->
+        <button id="downloadTableBtn" class="btn btn-success">Save Table</button>
+        <a href="/" class="btn btn-primary">Return to Dashboard</a>
+    </div>
+</div>
+
+<%- include('partials/footer', { async: true }) %>
+
+<script>
+    // Function to download table as CSV
+    function downloadCSV(csv, filename) {
+        let csvFile;
+        let downloadLink;
+
+        // Create a CSV file
+        csvFile = new Blob([csv], { type: "text/csv" });
+
+        // Create a download link
+        downloadLink = document.createElement("a");
+
+        // File name
+        downloadLink.download = filename;
+
+        // Link to the file
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+
+        // Make the link hidden
+        downloadLink.style.display = "none";
+
+        // Add the link to the DOM
+        document.body.appendChild(downloadLink);
+
+        // Click the link
+        downloadLink.click();
+    }
+
+    // Function to convert table to CSV format
+    // Function to download table as CSV
+function downloadCSV(csv, filename) {
+    let csvFile;
+    let downloadLink;
+
+    // Create a CSV file
+    csvFile = new Blob([csv], { type: "text/csv" });
+
+    // Create a download link
+    downloadLink = document.createElement("a");
+
+    // File name
+    downloadLink.download = filename;
+
+    // Link to the file
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+
+    // Make the link hidden
+    downloadLink.style.display = "none";
+
+    // Add the link to the DOM
+    document.body.appendChild(downloadLink);
+
+    // Click the link
+    downloadLink.click();
+}
+
+// Function to convert table to CSV format
+function tableToCSV() {
+    const table = document.getElementById("paymentSummaryTable");
+    let csv = [];
+    const rows = table.querySelectorAll("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = [];
+        const cols = rows[i].querySelectorAll("th, td");
+
+        for (let j = 0; j < cols.length; j++) {
+            row.push(cols[j].innerText.replace(/,/g, "")); // Escape commas in CSV
+        }
+
+        csv.push(row.join(","));
+    }
+
+    // Get the selected year from the dropdown
+    const selectedYear = document.getElementById("yearSelect").value;
+
+    // Download CSV file with year in the filename
+    downloadCSV(csv.join("\n"), `payment-summary-${selectedYear}.csv`);
+}
+
+// Event listener for the download button
+document.getElementById("downloadTableBtn").addEventListener("click", function () {
+    tableToCSV();
+});
+
+</script>

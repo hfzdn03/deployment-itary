@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100 bg-light">
+
+<div class="row g-3 w-50">
+    <div class="col-md-6 d-flex my-auto">
+        <div class="card w-100" style="height: 600px;">
+            <img src="https://mattaryswk.wordpress.com/wp-content/uploads/2022/03/bangunan-mattary-3-1.jpg" class="card-img-top" alt="Placeholder Image" style="object-fit: cover; height: 100%; width: auto;">
+        </div>
+    </div>
+    <div class="col-md-6 d-flex my-auto">
+        <div class="card w-100" style="height: 600px;">
+            <div class="card-body d-flex flex-column justify-content-center">
+                <h4 class="text-center mb-4">Parent Details</h4>
+                <form>
+                    <div class="mb-3">
+                        <label for="parentName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="parentName" value="<%= parent.name %>" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="parentEmail" value="<%= parent.email %>" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="parentPhone" value="<%= parent.phone %>" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentAddress" class="form-label">Home Address</label>
+                        <input type="text" class="form-control" id="parentAddress" value="<%= parent.address %>" readonly>
+                    </div>
+
+                    <!-- Admin edit button -->
+                    <% if (isAdmin) { %>
+                    <div class="d-grid mb-2">
+                        <a href="/edit-parent/<%= parent._id %>" class="btn btn-warning">Edit</a>
+                    </div>
+                    <% } %>
+
+                    <div class="d-grid mb-2">
+                        <a href="/table" class="btn btn-primary">Back to Table</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</footer>
+</body>
+</html>

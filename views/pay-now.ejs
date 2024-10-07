@@ -1,0 +1,19 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="container mt-5">
+    <h1>Pay Order #<%= invoice._id %></h1>
+    <h3>Student: <%= invoice.childId.name %></h3>
+    <p><strong>Amount Due:</strong> RM<%= invoice.totalAmount.toFixed(2) %></p>
+    <p>Pay/Transfer to the following Account Number: xx-xxxx-xxx</p>
+    <p>Bank Name: Maybank</p>
+
+    <form action="/pay-now/<%= invoice._id %>" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="receipt">Upload Receipt</label>
+            <input type="file" class="form-control" name="receipt" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Submit Payment</button>
+    </form>
+</div>
+
+<%- include('partials/footer', { async: true }) %>

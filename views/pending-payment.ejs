@@ -1,0 +1,42 @@
+<%- include('partials/header', { async: true }) %>
+
+<div class="container mt-5">
+    <h1>Pending Payments</h1>
+
+    <% if (pendingInvoices.length > 0) { %>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Invoice No</th>
+                    <th>Student Name</th>
+                    <th>Amount</th>
+                    <th>Receipt</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% pendingInvoices.forEach((invoice) => { %>
+                    <tr>
+                        <td><%= invoice.invoiceNumber %></td>
+                        <td><%= invoice.child_id.name %></td>
+                        <td>RM<%= invoice.totalAmount.toFixed(2) %></td>
+                        <td>
+                            <% if (invoice.receiptPath) { %>
+                                <a href="<%= invoice.receiptPath %>" target="_blank">View Receipt</a>
+                            <% } else { %>
+                                No receipt uploaded
+                            <% } %>
+                        </td>
+                        <td><%= invoice.status %></td>
+                        <td>
+                            <form action="/approve-payment/<%= invoice._id %>" method="POST">
+                                <button type="submit" class="btn btn-success">Approve</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No pending payments
