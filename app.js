@@ -148,8 +148,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // set up express session
-const sessionDatabase = mongoose.createConnection('mongodb+srv://hfzdnedu:KQkRnx4dehRxqZ40@itary.uitcp.mongodb.net/session');
-const mongoURI = 'mongodb+srv://hfzdnedu:KQkRnx4dehRxqZ40@itary.uitcp.mongodb.net/session';
+const sessionDatabase = mongoose.createConnection('use your own url');
+const mongoURI = 'use your own url';
 const store = new MongoDBSession({
     uri: mongoURI,
     collection: 'sessions',
@@ -199,21 +199,9 @@ app.use(async (req, res, next) => {
 });
 
 // MongoDB Connection
-// const userDB = mongoose.createConnection(
-//     'mongodb+srv://hfzdnedu:KQkRnx4dehRxqZ40@itary.uitcp.mongodb.net/user'
-// );
-// const teacherDB = mongoose.createConnection(
-//     'mongodb+srv://hfzdnedu:KQkRnx4dehRxqZ40@itary.uitcp.mongodb.net/teacher'
-// );
-// const fileDB = mongoose.createConnection(
-//     'mongodb+srv://hfzdnedu:KQkRnx4dehRxqZ40@itary.uitcp.mongodb.net/fileuploaded'
-// );
 const detailDB = mongoose.createConnection(
-    'mongodb+srv://hfzdnedu:KQkRnx4dehRxqZ40@itary.uitcp.mongodb.net/detail'
+    'use your own url'
 );
-// const productDB = mongoose.createConnection(
-//     'mongodb+srv://hfzdnedu:KQkRnx4dehRxqZ40@itary.uitcp.mongodb.net/products'
-// );
 
 // Define schema for child, parent, teacher, and file
 const childSchema = new mongoose.Schema({
