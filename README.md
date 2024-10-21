@@ -1,3 +1,4 @@
+(Malay elementary school registration node.js project)
 my first ever node.js project/prototype(75% completion need further update for template pages .ejs) for elementary school registration with mongodb.
 
 basically its a system for kids registration through parent account. parent will also be able to update and see the details of their childrens on which classes, make purchases for yearly/monthly registration bill, clothes, and books.
